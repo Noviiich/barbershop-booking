@@ -22,4 +22,4 @@ FastAPI + SQLAlchemy/Alembic подходит технически, но пот�
 
 ## Проверка
 
-BOOT-01 и MIG-01; PR-01/02. Команды после bootstrap: `rtk proxy make check`, `rtk proxy make db-up`, `rtk proxy uv run pytest tests/integration/test_database.py`. Критерий: воспроизводимая установка, запуск и миграции на выбранном PostgreSQL. Каркас PR-01 реализован; PostgreSQL и MIG-01 относятся к следующему шагу.
+BOOT-01 и MIG-01; PR-01/02. Команды после bootstrap: `rtk proxy make check`, `rtk proxy make db-up`, `rtk proxy make migrate-check`, `rtk proxy uv run pytest tests/integration/test_database.py`. Критерий: воспроизводимая установка, запуск и миграции на выбранном PostgreSQL. PR-02 реализован, но в текущем окружении MIG-01 ожидает Docker-доступ; production-провайдер БД ещё не выбран, поэтому поддержка `btree_gist` остаётся gate выбора хостинга.

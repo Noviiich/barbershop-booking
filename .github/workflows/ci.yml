@@ -11,6 +11,20 @@ jobs:
   check:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17.11-bookworm@sha256:051f7b7b3abdd564d5d1bd1e8c4b9c1b6e77087d1dd22020ede611c096a272e0
+        env:
+          POSTGRES_DB: barbershop
+          POSTGRES_USER: barbershop
+          POSTGRES_PASSWORD: barbershop
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U barbershop -d barbershop"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
     steps:
       - name: Check out repository
         uses: actions/checkout@v6.0.2
@@ -34,3 +48,13 @@ jobs:
 
       - name: Run bootstrap smoke test
         run: uv run --frozen pytest tests/smoke/test_bootstrap.py
+
+      - name: Check migrations on a clean database
+        env:
+          MIGRATION_CHECK_ADMIN_URL: postgresql://barbershop:barbershop@127.0.0.1:5432/postgres
+        run: make migrate-check
+
+      - name: Run database integration test
+        env:
+          TEST_DATABASE_URL: postgresql://barbershop:barbershop@127.0.0.1:5432/barbershop_test
+        run: uv run --frozen pytest tests/integration/test_database.py

@@ -1,6 +1,6 @@
 # Стратегия тестирования
 
-Дата: 2026-09-11. Реализованы проверки DOC-01 и BOOT-01 для пустого каркаса PR-01. Остальные тестовые ID и пути ниже — спецификация будущих тестов, а не уже работающий suite. ORM-модели, миграции и доменная логика на этом этапе не создаются.
+Дата: 2026-09-11. Реализованы DOC-01, BOOT-01 и код/тест MIG-01 для PR-01/02; полный запуск MIG-01 ожидает Docker-доступ. Остальные тестовые ID и пути ниже — спецификация будущих тестов, а не уже работающий suite. ORM-модели предметной области и доменная логика на этом этапе не создаются.
 
 ## Что доказываем
 
@@ -80,8 +80,8 @@ ID обозначает семейство тестов; его можно до�
 | --- | --- | --- |
 | `rtk proxy uv sync --frozen` | PR-01 | Установка закреплённых зависимостей, без изменения lockfile |
 | `rtk proxy make check` | PR-01 | Ruff check/format check, mypy, Django check, DOC-01; без автоматического исправления |
-| `rtk proxy make db-up` | PR-02 | Запуск исключительно локального/CI PostgreSQL и ожидание readiness |
-| `rtk proxy make migrate-check` | PR-02 | Clean migrate в disposable БД и проверка `makemigrations --check --dry-run`; без изменения production |
+| `rtk proxy make db-up` | PR-02, реализована | Запуск исключительно локального/CI PostgreSQL и ожидание readiness |
+| `rtk proxy make migrate-check` | PR-02, реализована | Clean migrate в disposable БД и проверка `makemigrations --check --dry-run`; без изменения production |
 | `rtk proxy uv run pytest <path>` | С PR-01 | Тесты указанной области; test settings выбираются автоматически, production DSN запрещён |
 | `rtk proxy make api-schema-check` | PR-14 | Генерация/валидация OpenAPI во временном месте, проверка drift опубликованной схемы |
 | `rtk proxy make contract-check` | PR-16 | Проверка snapshot/fixtures без сети и production credentials |
