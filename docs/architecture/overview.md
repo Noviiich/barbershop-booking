@@ -1,6 +1,6 @@
 # Архитектура backend
 
-Дата: 2026-09-11. Решения приняты как проектная база; выполнены PR-01–PR-07, включая каталог, календарь, persistence Booking, audit и transactional outbox. MIG-01/CAT-01/SCH-01/DB-01/AUD-01 и начальная OUT-01 пройдены на PostgreSQL 17; durable receipt и command API отсутствуют. См. [требования](../product/requirements.md) и [ADR](../adr/README.md).
+Дата: 2026-09-11. Решения приняты как проектная база; выполнены PR-01–PR-08, включая каталог, календарь, persistence Booking, audit/outbox и durable CommandReceipt. IDEM-01 с конкурентным replay пройден на PostgreSQL 17; command API отсутствует. См. [требования](../product/requirements.md) и [ADR](../adr/README.md).
 
 ## Основной стек
 

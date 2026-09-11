@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     "barbershop.schedule.apps.ScheduleConfig",
     "barbershop.booking.apps.BookingConfig",
     "barbershop.journal.apps.JournalConfig",
+    "barbershop.idempotency.apps.IdempotencyConfig",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

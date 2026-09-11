@@ -1,6 +1,6 @@
 # Требования к системе бронирования
 
-Дата: 2026-09-11. Статус: выполнены PR-01–PR-07, включая каталог, календарь, persistence Booking, audit и transactional outbox; соответствующие проверки пройдены на PostgreSQL 17. Durable receipt и команды Booking не начаты.
+Дата: 2026-09-11. Статус: выполнены PR-01–PR-08, включая каталог, календарь, persistence Booking, audit/outbox и durable CommandReceipt; IDEM-01 пройден на PostgreSQL 17. Команды Booking не начаты.
 
 ## Цель и границы
 
