@@ -4,7 +4,7 @@
 
 ## Текущий этап
 
-Выполнен PR-01; PR-02 реализован в рабочем дереве: добавлены PostgreSQL 17 dev/CI-контур, миграция `btree_gist`, MIG-01 и проверки миграций. Полный запуск MIG-01 ожидает доступ к Docker daemon. Доменные модули и ORM-модели предметной области ещё не созданы. Не переходить к PR-03 и последующим шагам без отдельного запроса. Концептуальные сущности в документации не являются готовой схемой БД.
+Выполнен PR-01; PR-02 и PR-03 реализованы в рабочем дереве. PR-02 всё ещё ожидает полного MIG-01 с Docker-доступом; PR-03 добавляет только identity/policy и security middleware, без каталога и booking. Доменные модули предметной области ещё не созданы. Не переходить к PR-04 и последующим шагам без отдельного запроса. Концептуальные сущности в документации не являются готовой схемой БД.
 
 ## Навигация
 
@@ -38,4 +38,4 @@
 
 ## Проверка
 
-Сейчас доступны `rtk proxy uv sync --frozen`, `rtk proxy make check`, `rtk proxy make db-up`, `rtk proxy make migrate-check`, BOOT-01, MIG-01 и DOC-01 из [testing-strategy](docs/testing-strategy.md), а также `rtk git diff --check`. Команды следующих шагов появятся только на соответствующих этапах roadmap.
+Сейчас доступны `rtk proxy uv sync --frozen`, `rtk proxy make check`, `rtk proxy make db-up`, `rtk proxy make migrate-check`, BOOT-01, AUTH-01, MIG-01 и DOC-01 из [testing-strategy](docs/testing-strategy.md), а также `rtk git diff --check`. Команды следующих шагов появятся только на соответствующих этапах roadmap.
