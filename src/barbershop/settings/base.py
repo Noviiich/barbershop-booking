@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "barbershop.database.apps.DatabaseConfig",
     "barbershop.identity.apps.IdentityConfig",
+    "barbershop.catalog.apps.CatalogConfig",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
