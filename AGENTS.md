@@ -4,7 +4,7 @@
 
 ## Текущий этап
 
-Выполнены PR-01–PR-06: PR-04 добавляет каталог, PR-05 — календарь, PR-06 — persistence Booking с DB-инвариантом интервалов. MIG-01, CAT-01, SCH-01 и DB-01 пройдены на PostgreSQL 17. Командный API Booking ещё не создан; не переходить к PR-07 и последующим шагам без отдельного запроса.
+Выполнены PR-01–PR-07: PR-06 добавляет persistence Booking с DB-инвариантом интервалов, PR-07 — append-only audit и transactional outbox. MIG-01, CAT-01, SCH-01, DB-01, AUD-01 и начальная часть OUT-01 пройдены на PostgreSQL 17. Durable receipt и командный API Booking ещё не созданы; не переходить к PR-08 и последующим шагам без отдельного запроса.
 
 ## Навигация
 
