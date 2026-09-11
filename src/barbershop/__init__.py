@@ -1,0 +1,1 @@
+"""Barbershop booking backend."""
