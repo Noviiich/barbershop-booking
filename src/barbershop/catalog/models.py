@@ -74,8 +74,6 @@ class ServiceOffering(models.Model):  # type: ignore[misc]
         validators=[RegexValidator(r"^[A-Z]{3}$", "currency must be an ISO-like uppercase code")],
     )
     duration_seconds = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    buffer_before_seconds = models.PositiveIntegerField(default=0)
-    buffer_after_seconds = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -89,11 +87,6 @@ class ServiceOffering(models.Model):  # type: ignore[misc]
             models.CheckConstraint(
                 condition=models.Q(duration_seconds__gt=0),
                 name="catalog_service_duration_positive",
-            ),
-            models.CheckConstraint(
-                condition=models.Q(buffer_before_seconds__gte=0)
-                & models.Q(buffer_after_seconds__gte=0),
-                name="catalog_service_buffers_nonnegative",
             ),
         ]
 

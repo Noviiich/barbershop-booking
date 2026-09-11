@@ -16,6 +16,8 @@ def test_barber_is_global_and_service_uses_exact_money_fields() -> None:
     assert price.max_digits == 10
     assert price.decimal_places == 2
     assert price.to_python("12.30") == Decimal("12.30")
+    assert "buffer_before_seconds" not in {field.name for field in ServiceOffering._meta.fields}
+    assert "buffer_after_seconds" not in {field.name for field in ServiceOffering._meta.fields}
 
 
 def test_invalid_timezone_and_non_positive_duration_are_rejected() -> None:

@@ -35,8 +35,6 @@ def update_service_offering(service_id: int, changes: Mapping[str, Any]) -> Serv
         "price",
         "currency",
         "duration_seconds",
-        "buffer_before_seconds",
-        "buffer_after_seconds",
         "is_active",
     }
     for field, value in changes.items():

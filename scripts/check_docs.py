@@ -20,7 +20,7 @@ def main() -> None:
     assert all((root / path).is_file() for path in required), "Missing required document"
 
     adrs = sorted((root / "docs/adr").glob("[0-9][0-9][0-9][0-9]-*.md"))
-    assert [path.name[:4] for path in adrs] == [f"{index:04d}" for index in range(1, 9)]
+    assert [path.name[:4] for path in adrs] == [f"{index:04d}" for index in range(1, 10)]
 
     files = [root / "AGENTS.md", *sorted((root / "docs").rglob("*.md"))]
     texts: dict[str, str] = {}
