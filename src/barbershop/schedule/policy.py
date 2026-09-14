@@ -9,7 +9,7 @@ from barbershop.schedule.calendar import local_to_utc, rule_interval_utc
 from barbershop.schedule.models import ScheduleException, ScheduleRule
 
 
-def _intervals_starting_on(
+def intervals_starting_on(
     branch: Branch,
     barber: Barber,
     local_date: date,
@@ -62,7 +62,7 @@ def booking_fits_schedule(
     intervals = [
         interval
         for schedule_date in schedule_dates
-        for interval in _intervals_starting_on(branch, barber, schedule_date, zone)
+        for interval in intervals_starting_on(branch, barber, schedule_date, zone)
     ]
     return any(
         interval_start <= start_at and end_at <= interval_end

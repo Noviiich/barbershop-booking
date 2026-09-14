@@ -4,7 +4,7 @@
 
 ## Текущий этап
 
-Выполнены PR-01–PR-09: PR-08 добавляет durable CommandReceipt, PR-09 — единый транзакционный CreateBooking service без HTTP endpoint. CON-01/TX-01 и зависимые PostgreSQL-проверки пройдены. Availability API ещё не создан; не переходить к PR-10 и последующим шагам без отдельного запроса.
+Выполнены PR-01–PR-10: PR-09 добавляет единый транзакционный CreateBooking service, PR-10 — read-only сервис доступности из primary PostgreSQL без HTTP endpoint. AVL-01/TIME-01 и зависимые PostgreSQL-проверки пройдены. Не переходить к PR-11 и последующим шагам без отдельного запроса.
 
 ## Навигация
 

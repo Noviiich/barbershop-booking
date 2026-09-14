@@ -49,7 +49,7 @@ class CreateBookingResult:
     replayed: bool
 
 
-def _database_now() -> datetime:
+def database_now() -> datetime:
     with connection.cursor() as cursor:
         cursor.execute("SELECT clock_timestamp()")
         value = cursor.fetchone()[0]
@@ -62,7 +62,7 @@ def _constraint_name(error: IntegrityError) -> str | None:
     return cast(str | None, getattr(diagnostic, "constraint_name", None))
 
 
-def _validate_time_policy(branch: Branch, start_at: datetime, now: datetime) -> None:
+def validate_booking_start(branch: Branch, start_at: datetime, now: datetime) -> None:
     if start_at.tzinfo is None or start_at.utcoffset() is None:
         raise BookingRuleViolation("start_at must be timezone-aware")
     zone = ZoneInfo(str(branch.timezone))
@@ -97,7 +97,7 @@ def _create_effect(
         Barber,
         Barber.objects.select_for_update().get(pk=command.barber_id),
     )
-    now = _database_now()
+    now = database_now()
     branch = cast(
         Branch,
         Branch.objects.select_related("business").get(pk=command.branch_id),
@@ -118,7 +118,7 @@ def _create_effect(
     ).exists():
         raise BookingRuleViolation("barber is not assigned to the service")
 
-    _validate_time_policy(branch, command.start_at, now)
+    validate_booking_start(branch, command.start_at, now)
     start_at = command.start_at.astimezone(UTC)
     end_at = start_at + timedelta(seconds=int(service.duration_seconds))
     if not booking_fits_schedule(branch, barber, start_at, end_at):
