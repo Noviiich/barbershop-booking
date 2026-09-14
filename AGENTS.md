@@ -4,7 +4,7 @@
 
 ## Текущий этап
 
-Выполнены PR-01–PR-08: PR-07 добавляет append-only audit/outbox, PR-08 — durable CommandReceipt и transactional replay helper. IDEM-01, включая конкурентный replay на PostgreSQL 17, пройден. Командный API Booking ещё не создан; не переходить к PR-09 и последующим шагам без отдельного запроса.
+Выполнены PR-01–PR-09: PR-08 добавляет durable CommandReceipt, PR-09 — единый транзакционный CreateBooking service без HTTP endpoint. CON-01/TX-01 и зависимые PostgreSQL-проверки пройдены. Availability API ещё не создан; не переходить к PR-10 и последующим шагам без отдельного запроса.
 
 ## Навигация
 

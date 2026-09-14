@@ -6,7 +6,11 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
+from barbershop.booking.models import Booking
+from barbershop.booking.services import create_booking
 from barbershop.catalog.models import Barber, BarberAssignment, Branch, Business, ServiceOffering
+from barbershop.catalog.services import update_service_offering
+from tests.support.booking import create_booking_scenario
 
 
 def test_barber_is_global_and_service_uses_exact_money_fields() -> None:
@@ -72,3 +76,19 @@ def test_assignment_rejects_service_from_another_branch_and_deduplicates() -> No
             service=service,
         )
     assert valid_assignment.pk is not None
+
+
+@pytest.mark.django_db(transaction=True)
+def test_catalog_change_does_not_rewrite_booking_snapshot() -> None:
+    scenario = create_booking_scenario()
+    result = create_booking(scenario.command("catalog-snapshot"))
+
+    update_service_offering(
+        scenario.service.id,
+        {"name": "New cut", "price": Decimal("25.00"), "duration_seconds": 3600},
+    )
+    booking = Booking.objects.get(pk=result.booking_id)
+
+    assert booking.service_name == "Cut"
+    assert booking.service_price == Decimal("10.00")
+    assert booking.duration_seconds == 1800

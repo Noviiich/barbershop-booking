@@ -6,8 +6,11 @@ from decimal import Decimal
 import pytest
 from django.core.exceptions import ValidationError
 
+from barbershop.booking.services import create_booking
 from barbershop.catalog.models import Barber, BarberAssignment, Branch, Business, ServiceOffering
 from barbershop.schedule.models import ScheduleException, ScheduleRule
+from barbershop.schedule.services import ScheduleConflict, update_schedule_rule
+from tests.support.booking import create_booking_scenario
 
 
 def test_schedule_rule_rejects_empty_interval_without_database() -> None:
@@ -48,3 +51,16 @@ def test_schedule_rule_requires_a_branch_assignment() -> None:
         rule.full_clean()
     BarberAssignment.objects.create(branch=branch, barber=barber, service=service)
     rule.full_clean()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_schedule_cannot_be_shortened_over_future_booking() -> None:
+    scenario = create_booking_scenario()
+    booking = create_booking(scenario.command("schedule-conflict"))
+
+    with pytest.raises(ScheduleConflict) as error:
+        update_schedule_rule(scenario.rule.id, {"ends_at": time(10, 15)})
+
+    scenario.rule.refresh_from_db()
+    assert scenario.rule.ends_at == time(18)
+    assert error.value.booking_ids == (booking.booking_id,)
