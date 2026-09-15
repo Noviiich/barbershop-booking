@@ -4,11 +4,12 @@ from dataclasses import dataclass
 from datetime import datetime, time, timedelta
 from decimal import Decimal
 from typing import cast
-from uuid import uuid4
+from uuid import UUID, uuid4
 from zoneinfo import ZoneInfo
 
 from django.utils import timezone
 
+from barbershop.booking.cancellation import CancelBookingCommand
 from barbershop.booking.services import CreateBookingCommand
 from barbershop.catalog.models import Barber, BarberAssignment, Branch, Business, ServiceOffering
 from barbershop.idempotency.services import CommandScope
@@ -39,6 +40,31 @@ class BookingScenario:
             service_id=self.service.id,
             start_at=start_at or self.start_at,
             correlation_id=uuid4(),
+        )
+
+    def cancel_command(
+        self,
+        key: str,
+        booking_id: UUID,
+        *,
+        expected_version: int = 1,
+        reason_code: str = "",
+        override: bool = False,
+    ) -> CancelBookingCommand:
+        return CancelBookingCommand(
+            scope=CommandScope(
+                business_id=self.business.id,
+                principal_kind="SYSTEM",
+                principal_id="test-system",
+                channel="TEST",
+                target_id=booking_id,
+            ),
+            idempotency_key=key,
+            booking_id=booking_id,
+            expected_version=expected_version,
+            correlation_id=uuid4(),
+            reason_code=reason_code,
+            override=override,
         )
 
 

@@ -1,6 +1,6 @@
 # Требования к системе бронирования
 
-Дата: 2026-09-14. Статус: выполнены PR-01–PR-10, включая транзакционный CreateBooking и read-only availability services; AVL-01/TIME-01 и предыдущие проверки пройдены на PostgreSQL 17. HTTP и остальные команды Booking не начаты.
+Дата: 2026-09-14. Статус: выполнены PR-01–PR-11, включая транзакционные CreateBooking/CancelBooking и read-only availability services; LIFE-01/CON-02 и предыдущие проверки пройдены на PostgreSQL 17. HTTP и остальные команды Booking не начаты.
 
 ## Цель и границы
 
