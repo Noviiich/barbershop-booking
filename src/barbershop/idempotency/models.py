@@ -69,3 +69,16 @@ class CommandReceipt(models.Model):  # type: ignore[misc]
     def __str__(self) -> str:
         """Вернуть составную идентичность идемпотентной команды."""
         return f"{self.scope_digest}:{self.operation}:{self.idempotency_key}"
+
+
+class PrivacyRedaction(models.Model):  # type: ignore[misc]
+    """Durable proof that a replay body was removed and must stay removed after restore."""
+
+    receipt = models.OneToOneField(
+        CommandReceipt, on_delete=models.PROTECT, related_name="redaction"
+    )
+    reason = models.CharField(max_length=64, default="RESPONSE_RETENTION_EXPIRED")
+    redacted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return str(self.receipt_id)

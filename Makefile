@@ -1,4 +1,4 @@
-.PHONY: check db-up migrate-check api-schema-check contract-check
+.PHONY: check db-up migrate-check api-schema-check contract-check privacy-check
 
 check:
 	uv run --frozen ruff check .
@@ -18,3 +18,6 @@ api-schema-check:
 
 contract-check:
 	uv run --frozen python scripts/check_yandex_contract.py
+
+privacy-check:
+	uv run --frozen pytest tests/security/test_data_lifecycle.py
