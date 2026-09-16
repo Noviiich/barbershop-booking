@@ -10,6 +10,9 @@ from barbershop.settings.base import *  # noqa: F403
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 if not SECRET_KEY:
     raise ImproperlyConfigured("DJANGO_SECRET_KEY is required in production")
+MANAGEMENT_TOKEN_ENCRYPTION_KEY = os.environ.get("MANAGEMENT_TOKEN_ENCRYPTION_KEY", "")
+if not MANAGEMENT_TOKEN_ENCRYPTION_KEY:
+    raise ImproperlyConfigured("MANAGEMENT_TOKEN_ENCRYPTION_KEY is required in production")
 
 try:
     DATABASES = {"default": database_settings(os.environ["DATABASE_URL"])}

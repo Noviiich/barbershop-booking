@@ -39,6 +39,9 @@ class CreateBookingCommand:
     service_id: int
     start_at: datetime
     correlation_id: UUID
+    management_token_hash: str = ""
+    management_token_encrypted: str = ""
+    guest_session_key: str = ""
 
 
 @dataclass(frozen=True)
@@ -160,10 +163,20 @@ def _create_effect(
         actor_id=command.scope.principal_id,
         correlation_id=command.correlation_id,
     )
+    if command.management_token_hash:
+        from barbershop.identity.models import BookingManagementToken
+
+        BookingManagementToken.objects.create(
+            booking=booking,
+            token_hash=command.management_token_hash,
+            encrypted_token=command.management_token_encrypted,
+            guest_session_key=command.guest_session_key,
+        )
     return "CREATED", {
         "booking_id": str(booking.id),
         "status": "CONFIRMED",
         "version": 1,
+        "management_token_encrypted": command.management_token_encrypted,
     }
 
 

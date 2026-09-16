@@ -6,6 +6,7 @@ from barbershop.database.connection import database_settings
 from barbershop.settings.base import *  # noqa: F403
 
 SECRET_KEY = "tests-only-not-for-production"
+MANAGEMENT_TOKEN_ENCRYPTION_KEY = "7WK6wY3Uyy9HtzWlCdwZMZMabPrE1n2W9RDaNXj8dW4="
 ALLOWED_HOSTS = ["testserver"]
 
 # Test settings deliberately ignore DATABASE_URL. A production connection cannot

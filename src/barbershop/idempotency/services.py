@@ -24,6 +24,16 @@ class IdempotencyResultExpired(Exception):
 
 @dataclass(frozen=True)
 class CommandScope:
+    """Область, в которой ключ идемпотентности считается уникальным.
+
+    Поля:
+        business_id: идентификатор бизнеса-владельца команды.
+        principal_kind: тип инициатора, например ``USER`` или ``SYSTEM``.
+        principal_id: устойчивый идентификатор конкретного инициатора.
+        channel: канал выполнения команды, например ``TEST`` или ``API``.
+        target_id: идентификатор изменяемого объекта; ``None`` для команд без цели.
+    """
+
     business_id: UUID
     principal_kind: str
     principal_id: str

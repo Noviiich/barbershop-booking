@@ -6,6 +6,7 @@ from barbershop.database.connection import database_settings
 from barbershop.settings.base import *  # noqa: F403
 
 SECRET_KEY = "development-only-not-for-production"
+MANAGEMENT_TOKEN_ENCRYPTION_KEY = "7WK6wY3Uyy9HtzWlCdwZMZMabPrE1n2W9RDaNXj8dW4="
 DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]"]
 

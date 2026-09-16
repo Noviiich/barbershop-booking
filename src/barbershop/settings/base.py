@@ -13,6 +13,8 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.sessions",
     "django.contrib.postgres",
+    "rest_framework",
+    "drf_spectacular",
     "barbershop.database.apps.DatabaseConfig",
     "barbershop.identity.apps.IdentityConfig",
     "barbershop.catalog.apps.CatalogConfig",
@@ -36,3 +38,6 @@ LANGUAGE_CODE = "ru-ru"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+REST_FRAMEWORK = {"DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema"}
+SPECTACULAR_SETTINGS = {"TITLE": "Barbershop Booking API", "VERSION": "v1"}

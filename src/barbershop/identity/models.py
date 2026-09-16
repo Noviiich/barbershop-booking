@@ -43,3 +43,39 @@ class StaffScope(models.Model):  # type: ignore[misc]
     def __str__(self) -> str:
         """Вернуть пользователя, роль и область назначения сотрудника."""
         return f"{self.user_id}:{self.role}:{self.branch_id or '*'}"
+
+
+class BookingManagementToken(models.Model):  # type: ignore[misc]
+    """Hashed guest capability bound to one booking and its issuing session."""
+
+    booking = models.OneToOneField(
+        "booking.Booking", on_delete=models.PROTECT, related_name="management_token"
+    )
+    token_hash = models.CharField(max_length=64, unique=True)
+    guest_session_key = models.CharField(max_length=64)
+    encrypted_token = models.CharField(max_length=512)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        """Вернуть нераскрывающий идентификатор capability записи."""
+        return str(self.booking_id)
+
+
+class ApiRateLimit(models.Model):  # type: ignore[misc]
+    """Durable fixed-window counter for mutation scopes across API processes."""
+
+    scope_digest = models.CharField(max_length=64)
+    window_start = models.DateTimeField()
+    count = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["scope_digest", "window_start"],
+                name="identity_rate_limit_scope_window_unique",
+            )
+        ]
+
+    def __str__(self) -> str:
+        """Вернуть диагностическую идентичность окна без данных клиента."""
+        return f"{self.scope_digest}:{self.window_start.isoformat()}"
