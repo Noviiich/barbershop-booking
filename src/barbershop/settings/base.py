@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "barbershop.booking.apps.BookingConfig",
     "barbershop.journal.apps.JournalConfig",
     "barbershop.idempotency.apps.IdempotencyConfig",
+    "barbershop.integration.apps.IntegrationConfig",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -41,3 +42,7 @@ USE_TZ = True
 
 REST_FRAMEWORK = {"DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema"}
 SPECTACULAR_SETTINGS = {"TITLE": "Barbershop Booking API", "VERSION": "v1"}
+
+YANDEX_BOOKING_READ_ENABLED = False
+YANDEX_BOOKING_JWT_SECRET = ""
+YANDEX_BOOKING_PARTNER_NAME = ""

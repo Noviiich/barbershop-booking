@@ -13,9 +13,26 @@ from barbershop.api import (
     RescheduleBookingView,
 )
 from barbershop.health import health
+from barbershop.yandex_api import YandexCompanyView, YandexFeedView, YandexSlotsView
 
 urlpatterns = [
     path("health/", health, name="health"),
+    path("companies/feed", YandexFeedView.as_view(), name="yandex-feed"),
+    path(
+        "companies/<str:company_id>/services",
+        YandexCompanyView.as_view(mode="services"),
+        name="yandex-services",
+    ),
+    path(
+        "companies/<str:company_id>/resources",
+        YandexCompanyView.as_view(mode="resources"),
+        name="yandex-resources",
+    ),
+    path(
+        "companies/<str:company_id>/available_time_slots",
+        YandexSlotsView.as_view(),
+        name="yandex-slots",
+    ),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path("api/v1/bookings/", BookingCollectionView.as_view(), name="booking-create"),
     path("api/v1/availability/", AvailabilityView.as_view(), name="booking-availability"),
