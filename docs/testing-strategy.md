@@ -1,6 +1,6 @@
 # Стратегия тестирования
 
-Дата: 2026-09-15. Реализованы и пройдены проверки PR-01–PR-12, включая LIFE-01/CON-02/MOVE-01, lost-response replay, атомарные audit/outbox/receipt и гонки create/cancel/reschedule на PostgreSQL 17. Остальные тестовые ID и пути ниже — спецификация будущих тестов.
+Дата: 2026-09-16. Реализованы и пройдены проверки PR-01–PR-13, включая LIFE-01/CON-02/MOVE-01/LIFE-02, lost-response replay, атомарные audit/outbox/receipt и гонки create/cancel/reschedule/terminal на PostgreSQL 17. Остальные тестовые ID и пути ниже — спецификация будущих тестов.
 
 ## Что доказываем
 

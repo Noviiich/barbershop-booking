@@ -4,7 +4,7 @@
 
 ## Текущий этап
 
-Выполнены PR-01–PR-12: PR-10 добавляет read-only сервис доступности, PR-11 — единый транзакционный CancelBooking service, PR-12 — единый транзакционный RescheduleBooking service без HTTP endpoint. LIFE-01/CON-02/MOVE-01 и зависимые PostgreSQL-проверки пройдены. Не переходить к PR-13 и последующим шагам без отдельного запроса.
+Выполнены PR-01–PR-13: PR-10 добавляет read-only сервис доступности, PR-11 — единый транзакционный CancelBooking service, PR-12 — единый транзакционный RescheduleBooking service, PR-13 — единые транзакционные CompleteBooking/MarkNoShow services без HTTP endpoint. LIFE-01/CON-02/MOVE-01/LIFE-02 и зависимые PostgreSQL-проверки пройдены. Не переходить к PR-14 и последующим шагам без отдельного запроса.
 
 ## Навигация
 

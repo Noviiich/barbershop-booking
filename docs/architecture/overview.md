@@ -1,6 +1,6 @@
 # Архитектура backend
 
-Дата: 2026-09-15. Выполнены PR-01–PR-12, включая каталог, календарь, persistence Booking, audit/outbox, durable receipt, CreateBooking, availability, CancelBooking и RescheduleBooking services. LIFE-01/CON-02/MOVE-01 и предыдущие проверки пройдены на PostgreSQL 17; HTTP API отсутствует. См. [требования](../product/requirements.md) и [ADR](../adr/README.md).
+Дата: 2026-09-16. Выполнены PR-01–PR-13, включая каталог, календарь, persistence Booking, audit/outbox, durable receipt, CreateBooking, availability, CancelBooking, RescheduleBooking, CompleteBooking и MarkNoShow services. LIFE-01/CON-02/MOVE-01/LIFE-02 и предыдущие проверки пройдены на PostgreSQL 17; HTTP API отсутствует. См. [требования](../product/requirements.md) и [ADR](../adr/README.md).
 
 ## Основной стек
 

@@ -10,10 +10,12 @@ from zoneinfo import ZoneInfo
 from django.utils import timezone
 
 from barbershop.booking.cancellation import CancelBookingCommand
+from barbershop.booking.outcomes import BookingOutcomeCommand
 from barbershop.booking.rescheduling import RescheduleBookingCommand
 from barbershop.booking.services import CreateBookingCommand
 from barbershop.catalog.models import Barber, BarberAssignment, Branch, Business, ServiceOffering
 from barbershop.idempotency.services import CommandScope
+from barbershop.identity.policy import Principal
 from barbershop.schedule.calendar import local_to_utc
 from barbershop.schedule.models import ScheduleRule
 
@@ -91,6 +93,35 @@ class BookingScenario:
             booking_id=booking_id,
             expected_version=expected_version,
             start_at=start_at,
+            correlation_id=uuid4(),
+        )
+
+    def outcome_command(
+        self,
+        key: str,
+        booking_id: UUID,
+        *,
+        expected_version: int = 1,
+        principal: Principal | None = None,
+    ) -> BookingOutcomeCommand:
+        """Собрать команду исхода визита от доверенного сотрудника филиала."""
+        actor = principal or Principal(
+            user_id=1,
+            roles=frozenset({"MASTER"}),
+            branch_ids=frozenset({self.branch.id}),
+        )
+        return BookingOutcomeCommand(
+            scope=CommandScope(
+                business_id=self.business.id,
+                principal_kind="USER",
+                principal_id=str(actor.user_id),
+                channel="TEST",
+                target_id=booking_id,
+            ),
+            principal=actor,
+            idempotency_key=key,
+            booking_id=booking_id,
+            expected_version=expected_version,
             correlation_id=uuid4(),
         )
 
