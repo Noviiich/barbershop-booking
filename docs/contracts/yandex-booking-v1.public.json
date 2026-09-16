@@ -1,0 +1,146 @@
+{
+  "snapshot_format": 1,
+  "contract": "Maps Booking Partners API",
+  "contract_version": "1.0",
+  "captured_at": "2026-09-16",
+  "scope": "beauty_and_general_services",
+  "provenance": {
+    "kind": "normalized_public_contract",
+    "specification_url": "https://yandex.ru/maps/booking/partners/api/",
+    "connection_guide_url": "https://yandex.ru/support/business-priority/ru/manage/booking-api-partners",
+    "note": "Normalized from the official rendered OpenAPI and connection guide; this is not a vendor-supplied raw OpenAPI export."
+  },
+  "authentication": {
+    "scheme": "bearer",
+    "format": "JWT",
+    "algorithm": "HS256",
+    "common_claims": [
+      "sub"
+    ],
+    "rules": [
+      "Endpoint-specific object claims must match request data.",
+      "Unknown additional claims do not affect validation.",
+      "The connection guide requires tokens without an iat claim."
+    ]
+  },
+  "protocol": {
+    "request_accept": "application/json",
+    "response_content_type": "application/json",
+    "redirect_https_to_http": false,
+    "datetime": "ISO 8601 with the organization's timezone offset",
+    "omit_missing_optional_fields": true
+  },
+  "operations": [
+    {
+      "method": "GET",
+      "path": "/companies/feed",
+      "jwt_claims": [],
+      "timeout_seconds": 60,
+      "responses": [200]
+    },
+    {
+      "method": "GET",
+      "path": "/companies/{companyId}/services",
+      "jwt_claims": ["companyId"],
+      "timeout_seconds": 5,
+      "responses": [200, 422]
+    },
+    {
+      "method": "GET",
+      "path": "/companies/{companyId}/resources",
+      "jwt_claims": ["companyId"],
+      "timeout_seconds": 5,
+      "responses": [200, 422]
+    },
+    {
+      "method": "GET",
+      "path": "/companies/{companyId}/resources/{resourceId}/reviews",
+      "jwt_claims": ["companyId"],
+      "timeout_seconds": 5,
+      "responses": [200]
+    },
+    {
+      "method": "GET",
+      "path": "/companies/{companyId}/available_dates",
+      "jwt_claims": ["companyId"],
+      "timeout_seconds": null,
+      "responses": [200, 422]
+    },
+    {
+      "method": "GET",
+      "path": "/companies/{companyId}/available_time_slots",
+      "jwt_claims": ["companyId"],
+      "timeout_seconds": 5,
+      "responses": [200, 422]
+    },
+    {
+      "method": "GET",
+      "path": "/companies/{companyId}/special_conditions",
+      "jwt_claims": ["companyId"],
+      "timeout_seconds": 5,
+      "responses": [200, 422]
+    },
+    {
+      "method": "POST",
+      "path": "/bookings",
+      "jwt_claims": ["companyId", "userPhone"],
+      "timeout_seconds": 5,
+      "responses": [200, 422]
+    },
+    {
+      "method": "GET",
+      "path": "/bookings/{bookingId}",
+      "jwt_claims": ["bookingId"],
+      "timeout_seconds": 5,
+      "responses": [200, 404]
+    },
+    {
+      "method": "PUT",
+      "path": "/bookings/{bookingId}",
+      "jwt_claims": ["bookingId"],
+      "timeout_seconds": 5,
+      "responses": [200, 404, 422]
+    },
+    {
+      "method": "DELETE",
+      "path": "/bookings/{bookingId}",
+      "jwt_claims": ["bookingId"],
+      "timeout_seconds": 5,
+      "responses": [200, 404, 422]
+    },
+    {
+      "method": "POST",
+      "path": "/prebookings",
+      "jwt_claims": ["companyId"],
+      "timeout_seconds": 5,
+      "optional": true,
+      "responses": [200, 404, 422]
+    },
+    {
+      "method": "DELETE",
+      "path": "/prebookings/{prebookingId}",
+      "jwt_claims": ["prebookingId"],
+      "timeout_seconds": 5,
+      "optional": true,
+      "responses": [200, 404]
+    }
+  ],
+  "outbound_status_update": {
+    "method": "PUT",
+    "url": "https://partner.maps.yandex.net/booking/v1/partners/{partnerName}/{bookingId}",
+    "required_when_local_state_changes": true,
+    "ordering_guarantee": null,
+    "idempotency_guarantee": null,
+    "readback_endpoint": null
+  },
+  "documented_error_codes": [
+    "CANCEL_FORBIDDEN"
+  ],
+  "unresolved": [
+    "Stable create operation identity and retry window",
+    "Conditional update or version fencing for reschedule and cancel",
+    "Outbound status payload enum, authentication, retry ordering and readback",
+    "JWT secret rotation and replay protection",
+    "Rate limits and an agreed channel shutdown procedure"
+  ]
+}

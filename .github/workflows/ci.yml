@@ -49,6 +49,12 @@ jobs:
       - name: Run bootstrap smoke test
         run: uv run --frozen pytest tests/smoke/test_bootstrap.py
 
+      - name: Check pinned Yandex contract
+        run: make contract-check
+
+      - name: Run Yandex contract tests
+        run: uv run --frozen pytest tests/contracts/test_yandex_contract.py
+
       - name: Check migrations on a clean database
         env:
           MIGRATION_CHECK_ADMIN_URL: postgresql://barbershop:barbershop@127.0.0.1:5432/postgres

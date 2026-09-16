@@ -1,0 +1,41 @@
+{
+  "available_slots_empty": {
+    "availableTimeSlots": []
+  },
+  "available_slots_with_offset": {
+    "availableTimeSlots": [
+      {
+        "datetime": "2030-10-15T11:48:00+03:00"
+      }
+    ]
+  },
+  "create_request": {
+    "booking": {
+      "companyId": "company-fixture-1",
+      "user": {
+        "name": "Test",
+        "phone": "+70000000000",
+        "email": "fixture@example.invalid"
+      },
+      "appointment": {
+        "serviceIds": ["service-fixture-1"],
+        "resourceId": "resource-fixture-1",
+        "datetime": "2030-10-15T11:48:00+03:00"
+      }
+    }
+  },
+  "create_response": {
+    "booking": {
+      "id": "booking-fixture-1",
+      "status": "created",
+      "serviceIds": ["service-fixture-1"],
+      "resourceId": "resource-fixture-1",
+      "datetime": "2030-10-15T11:48:00+03:00",
+      "comment": "fixture",
+      "paidAmount": 0
+    }
+  },
+  "cancel_forbidden": {
+    "code": "CANCEL_FORBIDDEN"
+  }
+}

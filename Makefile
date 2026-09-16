@@ -1,4 +1,4 @@
-.PHONY: check db-up migrate-check api-schema-check
+.PHONY: check db-up migrate-check api-schema-check contract-check
 
 check:
 	uv run --frozen ruff check .
@@ -15,3 +15,6 @@ migrate-check:
 
 api-schema-check:
 	uv run --frozen python manage.py spectacular --validate --file /tmp/barbershop-openapi.yaml
+
+contract-check:
+	uv run --frozen python scripts/check_yandex_contract.py

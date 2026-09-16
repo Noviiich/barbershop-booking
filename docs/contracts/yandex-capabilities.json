@@ -1,0 +1,64 @@
+{
+  "matrix_format": 1,
+  "updated_at": "2026-09-16",
+  "gates": {
+    "YG-01": {
+      "status": "blocked_owner_approval",
+      "evidence": null
+    },
+    "YG-02": {
+      "status": "partial_public_evidence",
+      "evidence": "yandex-booking-v1.public.json"
+    },
+    "YG-03": {
+      "status": "blocked_partner_sandbox",
+      "evidence": null
+    },
+    "YG-04": {
+      "status": "blocked_partner_sandbox",
+      "evidence": null
+    },
+    "YG-05": {
+      "status": "blocked_partner_sandbox",
+      "evidence": null
+    },
+    "YG-06": {
+      "status": "partial_public_evidence",
+      "evidence": "yandex-booking-v1.public.json"
+    }
+  },
+  "capabilities": {
+    "catalog_read": {
+      "enabled": false,
+      "requires": ["YG-01", "YG-02", "YG-06"]
+    },
+    "availability_read": {
+      "enabled": false,
+      "requires": ["YG-01", "YG-02", "YG-06"]
+    },
+    "create": {
+      "enabled": false,
+      "requires": ["YG-01", "YG-02", "YG-03", "YG-06"]
+    },
+    "reschedule": {
+      "enabled": false,
+      "requires": ["YG-01", "YG-02", "YG-04", "YG-06"]
+    },
+    "cancel": {
+      "enabled": false,
+      "requires": ["YG-01", "YG-02", "YG-04", "YG-06"]
+    },
+    "status_push": {
+      "enabled": false,
+      "requires": ["YG-01", "YG-02", "YG-05", "YG-06"]
+    },
+    "readback": {
+      "enabled": false,
+      "requires": ["YG-01", "YG-02", "YG-05"]
+    },
+    "prebooking": {
+      "enabled": false,
+      "requires": ["YG-01", "YG-02", "YG-03", "YG-06"]
+    }
+  }
+}
