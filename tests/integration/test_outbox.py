@@ -3,6 +3,7 @@
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from typing import cast
+from uuid import uuid4
 
 import pytest
 from django.core.exceptions import ValidationError
@@ -10,7 +11,8 @@ from django.db import DatabaseError, IntegrityError, transaction
 
 from barbershop.booking.models import Booking
 from barbershop.catalog.models import Barber, Branch, Business, ServiceOffering
-from barbershop.journal.models import OutboxEvent
+from barbershop.journal.delivery import acknowledge, claim_next, deliver_one
+from barbershop.journal.models import DeliveryState, OutboxEvent
 
 
 def _create_booking() -> Booking:
@@ -76,3 +78,23 @@ def test_event_is_unique_and_database_rejects_mutation() -> None:
 
     event.refresh_from_db()
     assert event.event_kind == "BOOKING_CREATED"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_delivery_claim_acknowledgement_is_leased_and_fenced() -> None:
+    """Проверить delivery после commit и запрет ACK от прежнего owner."""
+    booking = _create_booking()
+    event = OutboxEvent.objects.create(
+        booking=booking,
+        booking_version=1,
+        event_kind="BOOKING_CREATED",
+        schema_version=1,
+        payload={"booking_id": str(booking.id), "status": "CONFIRMED", "version": 1},
+    )
+    claim = claim_next("TEST")
+    assert claim is not None and claim.event.id == event.id
+    assert not acknowledge(claim.delivery_id, uuid4())
+    received: list[str] = []
+    assert deliver_one("TEST", lambda item: received.append(str(item.id))) is False
+    assert acknowledge(claim.delivery_id, claim.owner_token)
+    assert DeliveryState.objects.get(pk=claim.delivery_id).state == DeliveryState.State.DELIVERED

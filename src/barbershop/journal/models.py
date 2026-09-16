@@ -83,3 +83,34 @@ class OutboxEvent(models.Model):  # type: ignore[misc]
             raise ValidationError(
                 {"payload": f"unsupported payload key: {sorted(unknown_keys)[0]}"}
             )
+
+
+class DeliveryState(models.Model):  # type: ignore[misc]
+    """Per-destination delivery lease; it never changes Booking lifecycle."""
+
+    class State(models.TextChoices):  # type: ignore[misc]
+        PENDING = "PENDING", "Pending"
+        PROCESSING = "PROCESSING", "Processing"
+        DELIVERED = "DELIVERED", "Delivered"
+        PARKED = "PARKED", "Parked"
+
+    event = models.ForeignKey(OutboxEvent, on_delete=models.PROTECT, related_name="deliveries")
+    destination = models.CharField(max_length=64)
+    state = models.CharField(max_length=16, choices=State.choices, default=State.PENDING)
+    owner_token = models.UUIDField(null=True, blank=True)
+    lease_expires_at = models.DateTimeField(null=True, blank=True)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    available_at = models.DateTimeField()
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    last_error = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["event", "destination"], name="journal_delivery_event_destination_unique"
+            )
+        ]
+
+    def __str__(self) -> str:
+        """Вернуть событие и получатель его доставки."""
+        return f"{self.event_id}:{self.destination}"
