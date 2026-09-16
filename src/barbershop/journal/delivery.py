@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.utils import timezone
 
 from barbershop.journal.models import DeliveryState, OutboxEvent
+from barbershop.observability import record
 
 LEASE_SECONDS = 30
 MAX_ATTEMPTS = 20
@@ -58,6 +59,7 @@ def claim_next(destination: str) -> ClaimedDelivery | None:
     delivery.lease_expires_at = now + timedelta(seconds=LEASE_SECONDS)
     delivery.attempts += 1
     delivery.save(update_fields=["state", "owner_token", "lease_expires_at", "attempts"])
+    record("outbox.lease.claimed")
     return ClaimedDelivery(delivery.id, token, cast(OutboxEvent, delivery.event))
 
 
@@ -101,6 +103,7 @@ def fail(delivery_id: int, owner_token: UUID, error: str) -> bool:
     delivery.lease_expires_at = None
     delivery.last_error = error[:200]
     delivery.save()
+    record("outbox.parked" if delivery.state == DeliveryState.State.PARKED else "outbox.retry")
     return True
 
 

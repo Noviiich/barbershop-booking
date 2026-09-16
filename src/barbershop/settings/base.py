@@ -43,6 +43,8 @@ USE_TZ = True
 REST_FRAMEWORK = {"DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema"}
 SPECTACULAR_SETTINGS = {"TITLE": "Barbershop Booking API", "VERSION": "v1"}
 
+LOGGING = {"version": 1, "disable_existing_loggers": False}
+
 YANDEX_BOOKING_READ_ENABLED = False
 YANDEX_BOOKING_JWT_SECRET = ""
 YANDEX_BOOKING_PARTNER_NAME = ""
