@@ -19,6 +19,7 @@ class ParsedDatabaseUrl:
 
 
 def parse_postgres_url(url: str) -> ParsedDatabaseUrl:
+    """Разобрать и проверить URL подключения к PostgreSQL."""
     parsed = urlsplit(url)
     if parsed.scheme not in {"postgres", "postgresql"}:
         raise DatabaseConfigurationError("Only PostgreSQL URLs are supported")
@@ -47,7 +48,7 @@ def database_settings(
     allowed_hosts: Collection[str] | None = None,
     required_database_suffix: str | None = None,
 ) -> dict[str, object]:
-    """Build Django settings while enforcing the caller's target restrictions."""
+    """Собрать настройки Django с учётом ограничений целевой базы."""
     parsed = parse_postgres_url(url)
     if allowed_hosts is not None and parsed.host not in allowed_hosts:
         raise DatabaseConfigurationError("Database host is not permitted for this environment")

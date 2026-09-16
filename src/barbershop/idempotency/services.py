@@ -31,6 +31,7 @@ class CommandScope:
     target_id: UUID | None = None
 
     def digest(self) -> str:
+        """Вычислить устойчивый хеш области действия команды."""
         encoded = _canonical_json(
             {
                 "business_id": str(self.business_id),
@@ -51,6 +52,7 @@ class CommandResult:
 
 
 def _canonical_json(value: Mapping[str, object]) -> bytes:
+    """Сериализовать значение в каноническое представление JSON."""
     return json.dumps(
         value,
         allow_nan=False,
@@ -66,6 +68,7 @@ def command_fingerprint(
     *,
     version: int = 1,
 ) -> str:
+    """Вычислить отпечаток операции, версии и её полезной нагрузки."""
     canonical = _canonical_json(
         {"operation": operation, "payload": dict(payload), "version": version}
     )
@@ -82,7 +85,7 @@ def execute_idempotent(
     effect: Callable[[], tuple[str, dict[str, object]]],
     response_retention: timedelta = timedelta(days=30),
 ) -> CommandResult:
-    """Execute one effect and persist its replay result in the same transaction."""
+    """Выполнить эффект и сохранить результат повтора в той же транзакции."""
     fingerprint_version = 1
     fingerprint = command_fingerprint(operation, payload, version=fingerprint_version)
     scope_digest = scope.digest()
@@ -147,7 +150,7 @@ def execute_idempotent(
 
 @transaction.atomic  # type: ignore[untyped-decorator]
 def replace_result_with_tombstone(receipt_id: UUID) -> None:
-    """Remove the replay body while preserving permanent command identity."""
+    """Удалить тело результата повтора, сохранив постоянную идентичность команды."""
     receipt = cast(
         CommandReceipt,
         CommandReceipt.objects.select_for_update().get(pk=receipt_id),

@@ -14,6 +14,7 @@ from tests.support.booking import create_booking_scenario
 
 @pytest.mark.django_db(transaction=True)
 def test_cancel_and_create_preserve_a_valid_serialized_outcome() -> None:
+    """Проверить сериализуемый результат одновременных отмены и создания."""
     scenario = create_booking_scenario()
     original = create_booking(scenario.command("original"))
     assert original.booking_id is not None
@@ -21,6 +22,7 @@ def test_cancel_and_create_preserve_a_valid_serialized_outcome() -> None:
     ready = Barrier(2)
 
     def cancel() -> CancelBookingResult:
+        """Отменить исходную запись через независимое соединение."""
         close_old_connections()
         try:
             ready.wait(timeout=10)
@@ -34,6 +36,7 @@ def test_cancel_and_create_preserve_a_valid_serialized_outcome() -> None:
             close_old_connections()
 
     def create() -> CreateBookingResult:
+        """Попытаться создать заменяющую запись через независимое соединение."""
         close_old_connections()
         try:
             ready.wait(timeout=10)

@@ -14,7 +14,7 @@ class LocalTimeError(ValueError):
 def local_to_utc(
     local_date: date, local_time: time, zone: ZoneInfo, *, fold: int | None = None
 ) -> datetime:
-    """Convert a local wall time, rejecting DST gaps and implicit folds."""
+    """Преобразовать локальное время в UTC, отклоняя разрывы и неявные повторы DST."""
     naive = datetime.combine(local_date, local_time)
     candidates = []
     for candidate_fold in (0, 1):
@@ -41,7 +41,7 @@ def local_to_utc(
 def rule_interval_utc(
     rule: ScheduleRule, local_date: date, zone: ZoneInfo
 ) -> tuple[datetime, datetime]:
-    """Return one weekly rule interval; an end not after start crosses midnight."""
+    """Вернуть UTC-интервал правила, учитывая переход через полночь."""
     end_date = local_date if rule.ends_at > rule.starts_at else local_date + timedelta(days=1)
     start = local_to_utc(local_date, rule.starts_at, zone)
     end = local_to_utc(end_date, rule.ends_at, zone)
@@ -53,7 +53,7 @@ def rule_interval_utc(
 def intervals_for_date(
     rules: Iterable[ScheduleRule], local_date: date, zone: ZoneInfo
 ) -> list[tuple[datetime, datetime]]:
-    """Build sorted UTC intervals for one branch-local calendar date."""
+    """Построить отсортированные UTC-интервалы для локальной даты филиала."""
     intervals = [
         rule_interval_utc(rule, local_date, zone)
         for rule in rules

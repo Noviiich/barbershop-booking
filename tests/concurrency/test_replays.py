@@ -15,6 +15,7 @@ from barbershop.idempotency.services import CommandResult, CommandScope, execute
 
 @pytest.mark.django_db(transaction=True)
 def test_concurrent_replay_executes_effect_once() -> None:
+    """Проверить однократное выполнение эффекта при конкурентном повторе."""
     scope = CommandScope(
         business_id=uuid4(),
         principal_kind="USER",
@@ -24,11 +25,13 @@ def test_concurrent_replay_executes_effect_once() -> None:
     ready = Barrier(2)
 
     def run() -> CommandResult:
+        """Выполнить команду через отдельное соединение с базой."""
         close_old_connections()
         try:
             ready.wait(timeout=5)
 
             def effect() -> tuple[str, dict[str, object]]:
+                """Создать наблюдаемый побочный эффект тестовой команды."""
                 business = Business.objects.create(name="concurrent-effect")
                 return "CREATED", {"effect_id": str(business.pk)}
 

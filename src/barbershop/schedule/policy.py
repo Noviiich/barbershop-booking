@@ -15,6 +15,7 @@ def intervals_starting_on(
     local_date: date,
     zone: ZoneInfo,
 ) -> list[tuple[datetime, datetime]]:
+    """Получить рабочие интервалы мастера, начинающиеся в локальную дату."""
     exception = cast(
         ScheduleException | None,
         ScheduleException.objects.filter(
@@ -55,7 +56,7 @@ def booking_fits_schedule(
     start_at: datetime,
     end_at: datetime,
 ) -> bool:
-    """Check current and previous local days so overnight shifts are covered."""
+    """Проверить попадание записи в график с учётом ночных смен прошлого дня."""
     zone = ZoneInfo(str(branch.timezone))
     local_date = start_at.astimezone(zone).date()
     schedule_dates = (local_date - timedelta(days=1), local_date)

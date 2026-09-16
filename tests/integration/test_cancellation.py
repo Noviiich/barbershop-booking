@@ -18,6 +18,7 @@ from tests.support.booking import create_booking_scenario
 
 @pytest.mark.django_db(transaction=True)
 def test_cancel_releases_slot_and_replays_without_new_effects() -> None:
+    """Проверить освобождение слота и повтор отмены без новых эффектов."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("create"))
     assert created.booking_id is not None
@@ -57,6 +58,7 @@ def test_cancel_releases_slot_and_replays_without_new_effects() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_version_state_and_scope_conflicts_do_not_change_booking() -> None:
+    """Проверить неизменность записи при конфликтах версии, состояния и области."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("create-conflicts"))
     assert created.booking_id is not None
@@ -91,6 +93,7 @@ def test_version_state_and_scope_conflicts_do_not_change_booking() -> None:
 def test_cancellation_window_and_trusted_override_are_enforced(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Проверить окно отмены и обязательность доверенного разрешения override."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("create-window"))
     assert created.booking_id is not None
@@ -120,6 +123,7 @@ def test_cancellation_window_and_trusted_override_are_enforced(
 
 @pytest.mark.django_db(transaction=True)
 def test_override_cannot_cancel_after_start(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Проверить запрет принудительной отмены после начала визита."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("create-started"))
     assert created.booking_id is not None
@@ -146,6 +150,7 @@ def test_override_cannot_cancel_after_start(monkeypatch: pytest.MonkeyPatch) -> 
 def test_customer_can_cancel_at_exact_two_hour_boundary(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Проверить допустимость клиентской отмены ровно за два часа."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("create-boundary"))
     assert created.booking_id is not None
@@ -161,11 +166,13 @@ def test_customer_can_cancel_at_exact_two_hour_boundary(
 
 @pytest.mark.django_db(transaction=True)
 def test_journal_failure_rolls_back_cancellation(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Проверить откат отмены при сбое записи в журнал."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("create-rollback"))
     assert created.booking_id is not None
 
     def fail_journal(*args: object, **kwargs: object) -> None:
+        """Имитировать отказ при добавлении журнальных записей."""
         raise RuntimeError("failpoint after cancellation")
 
     monkeypatch.setattr("barbershop.booking.cancellation.append_booking_change", fail_journal)

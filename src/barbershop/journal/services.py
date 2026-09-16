@@ -19,7 +19,7 @@ def append_booking_change(
     correlation_id: UUID,
     reason_code: str = "",
 ) -> tuple[AuditEntry, OutboxEvent]:
-    """Append audit/outbox rows inside the caller's booking transaction."""
+    """Добавить аудит и outbox-событие внутри транзакции изменения записи."""
     if not transaction.get_connection().in_atomic_block:
         raise RuntimeError("booking journal must be appended inside transaction.atomic")
     if booking.pk is None:

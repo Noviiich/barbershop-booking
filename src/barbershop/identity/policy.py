@@ -36,7 +36,7 @@ ROLE_ACTIONS: Final[dict[str, frozenset[AccessAction]]] = {
 
 
 def authorize(principal: Principal | None, action: AccessAction, branch_id: UUID) -> None:
-    """Authorize a staff action using only trusted identity and explicit scope."""
+    """Авторизовать действие сотрудника по доверенной личности и явной области."""
     if principal is None or not principal.authenticated:
         raise AccessDenied("authentication is required")
     if not principal.roles:

@@ -8,6 +8,7 @@ from django.test import Client
 
 
 def test_health_endpoint_is_the_only_public_route(client: Client) -> None:
+    """Проверить, что публично доступна только проверка здоровья."""
     response = client.get("/health/")
 
     assert response.status_code == 200
@@ -16,6 +17,7 @@ def test_health_endpoint_is_the_only_public_route(client: Client) -> None:
 
 
 def test_production_settings_require_secret() -> None:
+    """Проверить обязательность секретного ключа в production-настройках."""
     environment = os.environ.copy()
     environment.pop("DJANGO_SECRET_KEY", None)
 

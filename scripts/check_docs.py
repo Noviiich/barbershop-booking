@@ -5,6 +5,7 @@ from pathlib import Path
 
 
 def main() -> None:
+    """Проверить структуру документации и трассируемость требований."""
     root = Path.cwd()
     required = [
         "AGENTS.md",

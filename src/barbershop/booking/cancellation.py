@@ -47,13 +47,11 @@ class CancelBookingResult:
     replayed: bool
 
 
-# 
 def _normalize_reason(command: CancelBookingCommand) -> str:
-    # получение кода причины отмены
+    """Нормализовать причину отмены и проверить обязательные поля команды."""
     reason_code = command.reason_code.strip()
     if len(reason_code) > 64:
         raise CancellationRuleViolation("reason_code must not exceed 64 characters")
-    # нельзя принудительно отменить, не указав кода причины отмены
     if command.override and not reason_code:
         raise CancellationRuleViolation("override cancellation requires a reason_code")
     if command.expected_version < 1:
@@ -62,6 +60,7 @@ def _normalize_reason(command: CancelBookingCommand) -> str:
 
 
 def _authorize_target(command: CancelBookingCommand) -> None:
+    """Убедиться, что запись принадлежит области действия команды."""
     if command.scope.target_id != command.booking_id:
         raise CancellationRuleViolation("booking is outside command target scope")
     try:
@@ -84,6 +83,7 @@ def _cancel_effect(
     lock_timeout_seconds: float,
     statement_timeout_seconds: float,
 ) -> tuple[str, dict[str, object]]:
+    """Отменить заблокированную запись и атомарно сохранить журнальные события."""
     with connection.cursor() as cursor:
         cursor.execute(
             "SELECT set_config('lock_timeout', %s, true)",
@@ -167,6 +167,7 @@ def _execute_once(
     lock_timeout_seconds: float,
     statement_timeout_seconds: float,
 ) -> CommandResult:
+    """Однократно выполнить идемпотентную команду отмены записи."""
     payload: dict[str, object] = {
         "booking_id": str(command.booking_id),
         "expected_version": command.expected_version,
@@ -198,7 +199,7 @@ def cancel_booking(
     lock_timeout_seconds: float = 1.0,
     statement_timeout_seconds: float = 2.0,
 ) -> CancelBookingResult:
-    """Cancel or replay one booking without waiting for external delivery."""
+    """Отменить или повторить отмену записи, не ожидая внешней доставки."""
     reason_code = _normalize_reason(command)
     if command.override and not allow_override:
         raise CancellationRuleViolation("trusted staff authority is required for override")

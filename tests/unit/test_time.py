@@ -9,11 +9,13 @@ from barbershop.schedule.calendar import LocalTimeError, local_to_utc
 
 
 def test_dst_gap_is_rejected() -> None:
+    """Проверить отклонение несуществующего времени в разрыве DST."""
     with pytest.raises(LocalTimeError, match="does not exist"):
         local_to_utc(date(2026, 3, 8), time(2, 30), ZoneInfo("America/New_York"))
 
 
 def test_dst_fold_requires_explicit_choice() -> None:
+    """Проверить явный выбор варианта времени при повторе DST."""
     zone = ZoneInfo("America/New_York")
     with pytest.raises(LocalTimeError, match="ambiguous"):
         local_to_utc(date(2026, 11, 1), time(1, 30), zone)
@@ -24,5 +26,6 @@ def test_dst_fold_requires_explicit_choice() -> None:
 
 
 def test_fixed_zone_conversion_is_independent_of_process_timezone() -> None:
+    """Проверить независимость преобразования от часового пояса процесса."""
     utc = local_to_utc(date(2026, 1, 15), time(10, 0), ZoneInfo("Europe/Moscow"))
     assert utc.isoformat() == "2026-01-15T07:00:00+00:00"

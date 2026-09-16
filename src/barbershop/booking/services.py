@@ -50,6 +50,7 @@ class CreateBookingResult:
 
 
 def database_now() -> datetime:
+    """Получить текущее время непосредственно от основной базы данных."""
     with connection.cursor() as cursor:
         cursor.execute("SELECT clock_timestamp()")
         value = cursor.fetchone()[0]
@@ -57,12 +58,14 @@ def database_now() -> datetime:
 
 
 def _constraint_name(error: IntegrityError) -> str | None:
+    """Извлечь имя нарушенного ограничения из ошибки PostgreSQL."""
     cause = error.__cause__
     diagnostic = getattr(cause, "diag", None)
     return cast(str | None, getattr(diagnostic, "constraint_name", None))
 
 
 def validate_booking_start(branch: Branch, start_at: datetime, now: datetime) -> None:
+    """Проверить начало записи по часовому поясу, горизонту и сетке филиала."""
     if start_at.tzinfo is None or start_at.utcoffset() is None:
         raise BookingRuleViolation("start_at must be timezone-aware")
     zone = ZoneInfo(str(branch.timezone))
@@ -83,6 +86,7 @@ def _create_effect(
     lock_timeout_seconds: float,
     statement_timeout_seconds: float,
 ) -> tuple[str, dict[str, object]]:
+    """Создать запись и журнальные события внутри текущей транзакции команды."""
     with connection.cursor() as cursor:
         cursor.execute(
             "SELECT set_config('lock_timeout', %s, true)",
@@ -169,6 +173,7 @@ def _execute_once(
     lock_timeout_seconds: float,
     statement_timeout_seconds: float,
 ) -> CommandResult:
+    """Однократно выполнить идемпотентную команду создания записи."""
     payload: dict[str, object] = {
         "barber_id": str(command.barber_id),
         "branch_id": str(command.branch_id),
@@ -198,7 +203,7 @@ def create_booking(
     lock_timeout_seconds: float = 1.0,
     statement_timeout_seconds: float = 2.0,
 ) -> CreateBookingResult:
-    """Create or replay a booking, retrying only whole retryable transactions."""
+    """Создать или повторить запись, перезапуская только всю транзакцию целиком."""
     deadline = time.monotonic() + deadline_seconds
     for attempt in range(3):
         try:

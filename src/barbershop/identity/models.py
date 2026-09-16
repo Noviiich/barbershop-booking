@@ -41,4 +41,5 @@ class StaffScope(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть пользователя, роль и область назначения сотрудника."""
         return f"{self.user_id}:{self.role}:{self.branch_id or '*'}"

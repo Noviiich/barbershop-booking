@@ -10,7 +10,7 @@ from barbershop.catalog.models import Barber, BarberAssignment, Branch, ServiceO
 
 
 def lock_branch_and_barbers(branch_id: UUID) -> Branch:
-    """Lock a branch first, then every affected global barber in stable order."""
+    """Заблокировать филиал, затем связанных мастеров в устойчивом порядке."""
     branch = cast(Branch, Branch.objects.select_for_update().get(pk=branch_id))
     barber_ids = (
         BarberAssignment.objects.filter(branch_id=branch_id)
@@ -24,7 +24,7 @@ def lock_branch_and_barbers(branch_id: UUID) -> Branch:
 
 @transaction.atomic  # type: ignore[untyped-decorator]
 def update_service_offering(service_id: int, changes: Mapping[str, Any]) -> ServiceOffering:
-    """Update a service only after taking the branch and affected barber locks."""
+    """Обновить услугу после блокировки филиала и связанных мастеров."""
     service = cast(
         ServiceOffering, ServiceOffering.objects.select_related("branch").get(pk=service_id)
     )

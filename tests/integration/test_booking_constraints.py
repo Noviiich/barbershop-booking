@@ -12,6 +12,7 @@ from barbershop.catalog.models import Barber, Branch, Business, ServiceOffering
 
 
 def test_booking_model_declares_protected_range_and_partial_exclusion() -> None:
+    """Проверить декларацию диапазона занятости и частичного исключения."""
     constraints = {constraint.name: constraint for constraint in Booking._meta.constraints}
     exclusion = constraints["booking_barber_occupied_range_excludes_overlap"]
 
@@ -25,6 +26,7 @@ def test_booking_model_declares_protected_range_and_partial_exclusion() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_postgres_exclusion_allows_neighbours_and_cancelled_but_rejects_overlap() -> None:
+    """Проверить допуск соседних и отменённых записей при запрете пересечений."""
     business = Business.objects.create(name="Example")
     branch = Branch.objects.create(business=business, name="Main")
     barber = Barber.objects.create(display_name="Alex")
@@ -37,6 +39,7 @@ def test_postgres_exclusion_allows_neighbours_and_cancelled_but_rejects_overlap(
     start = datetime(2026, 1, 15, 10, tzinfo=UTC)
 
     def create(start_at: datetime, status: str = "CONFIRMED") -> Booking:
+        """Создать запись с заданным началом и статусом."""
         return cast(
             Booking,
             Booking.objects.create(

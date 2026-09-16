@@ -30,9 +30,11 @@ class ScheduleRule(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть составное представление регулярного правила расписания."""
         return f"{self.branch_id}:{self.barber_id}:{self.weekday}:{self.starts_at}-{self.ends_at}"
 
     def clean(self) -> None:
+        """Проверить непустой интервал и назначение мастера в филиал."""
         if self.starts_at == self.ends_at:
             raise ValidationError("schedule interval must not be empty")
         if (
@@ -79,9 +81,11 @@ class ScheduleException(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть составное представление исключения расписания."""
         return f"{self.branch_id}:{self.barber_id}:{self.local_date}:{self.kind}"
 
     def clean(self) -> None:
+        """Проверить дату, вид, интервал и область исключения расписания."""
         if self.local_date is None or not isinstance(self.local_date, date):
             raise ValidationError({"local_date": "a local calendar date is required"})
         if self.kind == self.Kind.CLOSED and (self.starts_at or self.ends_at):

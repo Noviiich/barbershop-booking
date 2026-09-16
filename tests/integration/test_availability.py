@@ -22,6 +22,7 @@ from tests.support.booking import BookingScenario, create_booking_scenario
 
 
 def _query_for_scenario(scenario: BookingScenario) -> AvailabilityQuery:
+    """Собрать запрос доступности для тестового сценария."""
     local_date = scenario.start_at.astimezone(ZoneInfo(str(scenario.branch.timezone))).date()
     return AvailabilityQuery(
         business_id=scenario.business.id,
@@ -35,6 +36,7 @@ def _query_for_scenario(scenario: BookingScenario) -> AvailabilityQuery:
 
 @pytest.mark.django_db(transaction=True)
 def test_published_slots_fit_schedule_and_are_accepted_without_state_change() -> None:
+    """Проверить соответствие опубликованных слотов графику без изменения состояния."""
     scenario = create_booking_scenario()
     query = _query_for_scenario(scenario)
 
@@ -58,6 +60,7 @@ def test_published_slots_fit_schedule_and_are_accepted_without_state_change() ->
 
 @pytest.mark.django_db(transaction=True)
 def test_occupied_candidates_are_removed_and_stale_slot_is_rejected() -> None:
+    """Проверить исключение занятых кандидатов и отказ для устаревшего слота."""
     scenario = create_booking_scenario()
     query = _query_for_scenario(scenario)
     stale_slot = next(
@@ -79,6 +82,7 @@ def test_occupied_candidates_are_removed_and_stale_slot_is_rejected() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_query_scope_filters_and_bounds_are_enforced() -> None:
+    """Проверить область, фильтры и границы запроса доступности."""
     scenario = create_booking_scenario()
     query = _query_for_scenario(scenario)
 

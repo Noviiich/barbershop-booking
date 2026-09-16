@@ -84,9 +84,11 @@ class Booking(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть идентификатор записи для административного представления."""
         return str(self.id)
 
     def clean(self) -> None:
+        """Проверить согласованность интервала, длительности и филиала услуги."""
         if self.start_at is not None and self.end_at is not None and self.end_at <= self.start_at:
             raise ValidationError({"end_at": "must be after start_at"})
         if self.duration_seconds and self.start_at and self.end_at:

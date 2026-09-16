@@ -14,6 +14,7 @@ class Business(models.Model):  # type: ignore[misc]
     name = models.CharField(max_length=200)
 
     def __str__(self) -> str:
+        """Вернуть название компании для административного представления."""
         return str(self.name)
 
 
@@ -40,9 +41,11 @@ class Branch(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть название филиала вместе с идентификатором компании."""
         return f"{self.business_id}:{self.name}"
 
     def clean(self) -> None:
+        """Проверить, что часовой пояс филиала существует в базе IANA."""
         try:
             ZoneInfo(self.timezone)
         except ZoneInfoNotFoundError as error:
@@ -57,6 +60,7 @@ class Barber(models.Model):  # type: ignore[misc]
     is_active = models.BooleanField(default=True)
 
     def __str__(self) -> str:
+        """Вернуть отображаемое имя мастера."""
         return str(self.display_name)
 
 
@@ -91,6 +95,7 @@ class ServiceOffering(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть название услуги вместе с идентификатором филиала."""
         return f"{self.branch_id}:{self.name}"
 
 
@@ -111,8 +116,10 @@ class BarberAssignment(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть составной идентификатор назначения мастера на услугу."""
         return f"{self.branch_id}:{self.barber_id}:{self.service_id}"
 
     def clean(self) -> None:
+        """Проверить принадлежность услуги филиалу назначения."""
         if self.service_id and self.branch_id and self.service.branch_id != self.branch_id:
             raise ValidationError({"service": "service must belong to the assignment branch"})

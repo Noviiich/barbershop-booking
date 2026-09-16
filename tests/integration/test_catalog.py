@@ -14,6 +14,7 @@ from tests.support.booking import create_booking_scenario
 
 
 def test_barber_is_global_and_service_uses_exact_money_fields() -> None:
+    """Проверить глобальность мастера и точные денежные поля услуги."""
     assert Barber._meta.get_field("id").primary_key
 
     price = ServiceOffering._meta.get_field("price")
@@ -25,6 +26,7 @@ def test_barber_is_global_and_service_uses_exact_money_fields() -> None:
 
 
 def test_invalid_timezone_and_non_positive_duration_are_rejected() -> None:
+    """Проверить отказ для неверного часового пояса и неположительной длительности."""
     business = Business(name="Example")
     invalid_branch = Branch(business=business, name="Main", timezone="Not/IANA")
 
@@ -45,6 +47,7 @@ def test_invalid_timezone_and_non_positive_duration_are_rejected() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_assignment_rejects_service_from_another_branch_and_deduplicates() -> None:
+    """Проверить область услуги и уникальность назначения мастера."""
     business = Business.objects.create(name="Example")
     branch_a = Branch.objects.create(business=business, name="A")
     branch_b = Branch.objects.create(business=business, name="B")
@@ -80,6 +83,7 @@ def test_assignment_rejects_service_from_another_branch_and_deduplicates() -> No
 
 @pytest.mark.django_db(transaction=True)
 def test_catalog_change_does_not_rewrite_booking_snapshot() -> None:
+    """Проверить неизменность снимка записи после изменения каталога."""
     scenario = create_booking_scenario()
     result = create_booking(scenario.command("catalog-snapshot"))
 

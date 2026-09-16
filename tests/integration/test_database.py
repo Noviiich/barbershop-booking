@@ -14,6 +14,7 @@ from scripts.migrate_check import check_database_url
 
 
 def test_test_settings_reject_sqlite_and_nonlocal_production_host() -> None:
+    """Проверить запрет SQLite и внешнего production-хоста в тестах."""
     with pytest.raises(DatabaseConfigurationError, match="PostgreSQL"):
         database_settings("sqlite:///tmp/test.sqlite3")
 
@@ -26,6 +27,7 @@ def test_test_settings_reject_sqlite_and_nonlocal_production_host() -> None:
 
 
 def test_migration_check_uses_only_a_disposable_local_database() -> None:
+    """Проверить использование только одноразовой локальной базы для миграций."""
     check_url = check_database_url("postgresql://user:password@127.0.0.1:54329/postgres")
 
     assert check_url.endswith("/barbershop_migration_check")
@@ -34,6 +36,7 @@ def test_migration_check_uses_only_a_disposable_local_database() -> None:
 
 
 def test_test_settings_ignore_database_url_from_the_environment() -> None:
+    """Проверить независимость тестовых настроек от переменной DATABASE_URL."""
     environment = os.environ | {
         "DATABASE_URL": "postgresql://user:password@production.example/barbershop",
     }
@@ -57,6 +60,7 @@ def test_test_settings_ignore_database_url_from_the_environment() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_postgres_17_btree_gist_utc_and_independent_connections() -> None:
+    """Проверить PostgreSQL 17, btree_gist, UTC и независимые соединения."""
     assert connection.vendor == "postgresql"
     assert settings.DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql"
 

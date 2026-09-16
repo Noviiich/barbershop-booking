@@ -46,6 +46,7 @@ class AvailableSlot:
 
 
 def _query_branch(query: AvailabilityQuery, now: datetime) -> Branch:
+    """Проверить параметры запроса и получить филиал в заданной области доступа."""
     if query.date_to < query.date_from:
         raise AvailabilityQueryError("date_to must not be before date_from")
     if (query.date_to - query.date_from).days + 1 > MAX_RANGE_DAYS:
@@ -69,6 +70,7 @@ def _query_branch(query: AvailabilityQuery, now: datetime) -> Branch:
 
 
 def _local_dates(date_from: date, date_to: date) -> list[date]:
+    """Вернуть все локальные календарные даты включительного диапазона."""
     return [date_from + timedelta(days=offset) for offset in range((date_to - date_from).days + 1)]
 
 
@@ -78,6 +80,7 @@ def _schedule_intervals(
     local_date: date,
     zone: ZoneInfo,
 ) -> list[tuple[datetime, datetime]]:
+    """Получить рабочие интервалы мастера, покрывающие локальную дату."""
     intervals: list[tuple[datetime, datetime]] = []
     for schedule_date in (local_date - timedelta(days=1), local_date):
         try:
@@ -93,6 +96,7 @@ def _candidate_starts(
     zone: ZoneInfo,
     grid_minutes: int,
 ) -> list[datetime]:
+    """Построить допустимые UTC-моменты начала по локальной сетке филиала."""
     starts: list[datetime] = []
     local_value = datetime.combine(local_date, time.min)
     local_end = local_value + timedelta(days=1)
@@ -104,7 +108,7 @@ def _candidate_starts(
 
 
 def list_available_slots(query: AvailabilityQuery) -> tuple[AvailableSlot, ...]:
-    """Return bounded slot candidates; this function never reserves a resource."""
+    """Вернуть ограниченный список свободных слотов, не резервируя ресурсы."""
     now = database_now()
     branch = _query_branch(query, now)
     assignments = (

@@ -13,6 +13,7 @@ from tests.support.booking import create_booking_scenario
 
 @pytest.mark.django_db(transaction=True)
 def test_reschedule_updates_the_interval_and_replays_without_new_journal_rows() -> None:
+    """Проверить перенос интервала и повтор без новых журнальных строк."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("create"))
     assert created.booking_id is not None
@@ -36,6 +37,7 @@ def test_reschedule_updates_the_interval_and_replays_without_new_journal_rows() 
 
 @pytest.mark.django_db(transaction=True)
 def test_conflicting_new_slot_keeps_the_original_interval_and_version() -> None:
+    """Проверить сохранение интервала и версии при конфликте нового слота."""
     scenario = create_booking_scenario()
     original = create_booking(scenario.command("original"))
     occupied = create_booking(
@@ -60,6 +62,7 @@ def test_conflicting_new_slot_keeps_the_original_interval_and_version() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_same_time_is_a_version_checked_no_op() -> None:
+    """Проверить перенос на то же время как no-op с контролем версии."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("create-no-op"))
     assert created.booking_id is not None

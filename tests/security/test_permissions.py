@@ -17,6 +17,7 @@ BRANCH_B = UUID("00000000-0000-0000-0000-00000000000b")
 
 
 def test_admin_can_manage_only_the_assigned_branch() -> None:
+    """Проверить управление администратором только назначенным филиалом."""
     principal = Principal(7, frozenset({"ADMIN"}), frozenset({BRANCH_A}))
 
     authorize(principal, AccessAction.MANAGE_BRANCH, BRANCH_A)
@@ -25,6 +26,7 @@ def test_admin_can_manage_only_the_assigned_branch() -> None:
 
 
 def test_master_cannot_manage_catalog_and_unauthenticated_is_denied() -> None:
+    """Проверить запрет управления каталогом мастеру и анонимному субъекту."""
     master = Principal(8, frozenset({"MASTER"}), frozenset({BRANCH_A}))
 
     authorize(master, AccessAction.MARK_OUTCOME, BRANCH_A)
@@ -35,6 +37,7 @@ def test_master_cannot_manage_catalog_and_unauthenticated_is_denied() -> None:
 
 
 def test_owner_scope_is_global_but_principal_is_immutable() -> None:
+    """Проверить глобальную область владельца и неизменность principal."""
     owner = Principal(9, frozenset({"OWNER"}), frozenset())
 
     authorize(owner, AccessAction.MANAGE_BRANCH, BRANCH_B)
@@ -43,6 +46,7 @@ def test_owner_scope_is_global_but_principal_is_immutable() -> None:
 
 
 def test_model_has_one_global_owner_constraint_per_user() -> None:
+    """Проверить ограничение единственной глобальной роли владельца."""
     constraints = {constraint.name: constraint for constraint in StaffScope._meta.constraints}
     owner_constraint = constraints["identity_scope_one_global_owner_per_user"]
 
@@ -54,6 +58,7 @@ def test_model_has_one_global_owner_constraint_per_user() -> None:
 
 
 def test_session_and_csrf_middleware_are_enabled() -> None:
+    """Проверить включение сессий, аутентификации и CSRF-защиты."""
     assert "django.contrib.sessions.middleware.SessionMiddleware" in settings.MIDDLEWARE
     assert "django.contrib.auth.middleware.AuthenticationMiddleware" in settings.MIDDLEWARE
     assert "django.middleware.csrf.CsrfViewMiddleware" in settings.MIDDLEWARE

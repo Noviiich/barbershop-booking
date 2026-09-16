@@ -15,7 +15,7 @@ SAFE_HOSTS = frozenset({"127.0.0.1", "localhost", "db"})
 
 
 def check_database_url(admin_url: str) -> str:
-    """Derive the fixed disposable target after validating the local admin URL."""
+    """Проверить административный URL и вернуть URL одноразовой тестовой базы."""
     parsed = parse_postgres_url(admin_url)
     if parsed.host not in SAFE_HOSTS or parsed.name != "postgres":
         raise DatabaseConfigurationError(
@@ -28,6 +28,7 @@ def check_database_url(admin_url: str) -> str:
 
 
 def main() -> None:
+    """Проверить миграции на локальной одноразовой базе PostgreSQL."""
     admin_url = os.environ.get("MIGRATION_CHECK_ADMIN_URL", DEFAULT_ADMIN_URL)
     check_url = check_database_url(admin_url)
     admin_connection = psycopg.connect(admin_url, autocommit=True)

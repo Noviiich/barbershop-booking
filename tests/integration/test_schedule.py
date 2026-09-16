@@ -14,12 +14,14 @@ from tests.support.booking import create_booking_scenario
 
 
 def test_schedule_rule_rejects_empty_interval_without_database() -> None:
+    """Проверить отказ для пустого интервала правила без обращения к базе."""
     rule = ScheduleRule(weekday=0, starts_at=time(10), ends_at=time(10))
     with pytest.raises(ValidationError, match="must not be empty"):
         rule.clean()
 
 
 def test_closed_exception_has_no_interval() -> None:
+    """Проверить отсутствие интервала у исключения закрытия."""
     exception = ScheduleException(
         local_date=date(2026, 1, 15),
         kind=ScheduleException.Kind.CLOSED,
@@ -31,6 +33,7 @@ def test_closed_exception_has_no_interval() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_schedule_rule_requires_a_branch_assignment() -> None:
+    """Проверить требование назначения мастера в филиал для правила."""
     business = Business.objects.create(name="Example")
     branch = Branch.objects.create(business=business, name="Main")
     barber = Barber.objects.create(display_name="Alex")
@@ -55,6 +58,7 @@ def test_schedule_rule_requires_a_branch_assignment() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_schedule_cannot_be_shortened_over_future_booking() -> None:
+    """Проверить запрет сокращения графика поверх будущей записи."""
     scenario = create_booking_scenario()
     booking = create_booking(scenario.command("schedule-conflict"))
 

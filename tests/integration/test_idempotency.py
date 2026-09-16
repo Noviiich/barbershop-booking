@@ -17,6 +17,7 @@ from barbershop.idempotency.services import (
 
 
 def _scope(*, principal_id: str = "user-1") -> CommandScope:
+    """Собрать тестовую область идемпотентной команды."""
     return CommandScope(
         business_id=uuid4(),
         principal_kind="USER",
@@ -27,9 +28,11 @@ def _scope(*, principal_id: str = "user-1") -> CommandScope:
 
 @pytest.mark.django_db(transaction=True)
 def test_same_command_replays_one_effect_and_mismatch_conflicts() -> None:
+    """Проверить повтор одного эффекта и конфликт отличающейся команды."""
     scope = _scope()
 
     def effect() -> tuple[str, dict[str, object]]:
+        """Создать наблюдаемый эффект идемпотентной команды."""
         business = Business.objects.create(name="effect")
         return "CREATED", {"effect_id": str(business.pk)}
 
@@ -65,10 +68,12 @@ def test_same_command_replays_one_effect_and_mismatch_conflicts() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_scope_isolation_does_not_reveal_another_result() -> None:
+    """Проверить изоляцию результатов между областями разных пользователей."""
     shared_business_id = uuid4()
     calls = 0
 
     def effect() -> tuple[str, dict[str, object]]:
+        """Посчитать фактические выполнения эффекта."""
         nonlocal calls
         calls += 1
         return "OK", {"call": calls}
@@ -94,9 +99,11 @@ def test_scope_isolation_does_not_reveal_another_result() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_transient_rollback_leaves_no_receipt_and_retry_can_run() -> None:
+    """Проверить удаление квитанции после отката и возможность повтора."""
     scope = _scope()
 
     def failing_effect() -> tuple[str, dict[str, object]]:
+        """Создать эффект и вызвать временную ошибку для проверки отката."""
         Business.objects.create(name="rolled-back")
         raise RuntimeError("transient")
 
@@ -124,10 +131,12 @@ def test_transient_rollback_leaves_no_receipt_and_retry_can_run() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_tombstone_and_expired_result_never_execute_again() -> None:
+    """Проверить запрет повторного эффекта для tombstone и истёкшего результата."""
     scope = _scope()
     calls = 0
 
     def effect() -> tuple[str, dict[str, object]]:
+        """Посчитать фактические выполнения эффекта."""
         nonlocal calls
         calls += 1
         return "OK", {"call": calls}

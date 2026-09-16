@@ -15,6 +15,7 @@ from barbershop.journal.services import append_booking_change
 
 
 def _create_booking() -> Booking:
+    """Создать запись с минимальным набором связанных данных."""
     business = Business.objects.create(name="Example")
     branch = Branch.objects.create(business=business, name="Main")
     barber = Barber.objects.create(display_name="Alex")
@@ -45,6 +46,8 @@ def _create_booking() -> Booking:
 
 @pytest.mark.django_db(transaction=True)
 def test_rollback_removes_booking_audit_and_outbox() -> None:
+    """Проверить удаление записи, аудита и outbox при откате."""
+
     class ForcedRollback(Exception):
         pass
 
@@ -67,6 +70,7 @@ def test_rollback_removes_booking_audit_and_outbox() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_commit_preserves_matching_booking_version_and_minimal_payload() -> None:
+    """Проверить согласованную версию и минимальную нагрузку после commit."""
     with transaction.atomic():
         booking = _create_booking()
         audit, event = append_booking_change(

@@ -28,6 +28,7 @@ class BookingScenario:
     start_at: datetime
 
     def command(self, key: str, *, start_at: datetime | None = None) -> CreateBookingCommand:
+        """Собрать команду создания записи для тестового сценария."""
         return CreateBookingCommand(
             scope=CommandScope(
                 business_id=self.business.id,
@@ -52,6 +53,7 @@ class BookingScenario:
         reason_code: str = "",
         override: bool = False,
     ) -> CancelBookingCommand:
+        """Собрать команду отмены записи для тестового сценария."""
         return CancelBookingCommand(
             scope=CommandScope(
                 business_id=self.business.id,
@@ -76,6 +78,7 @@ class BookingScenario:
         start_at: datetime,
         expected_version: int = 1,
     ) -> RescheduleBookingCommand:
+        """Собрать команду переноса записи для тестового сценария."""
         return RescheduleBookingCommand(
             scope=CommandScope(
                 business_id=self.business.id,
@@ -93,6 +96,7 @@ class BookingScenario:
 
 
 def create_booking_scenario() -> BookingScenario:
+    """Создать в PostgreSQL полный сценарий записи с каталогом и расписанием."""
     business = cast(Business, Business.objects.create(name="Example"))
     branch = cast(
         Branch,

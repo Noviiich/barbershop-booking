@@ -22,6 +22,7 @@ def _move(
     start_offset: timedelta,
     ready: Barrier,
 ) -> RescheduleBookingResult:
+    """Перенести запись через независимое соединение после общего барьера."""
     close_old_connections()
     try:
         ready.wait(timeout=10)
@@ -41,6 +42,7 @@ def _move(
 
 @pytest.mark.django_db(transaction=True)
 def test_two_reschedules_of_one_version_have_one_winner() -> None:
+    """Проверить единственного победителя двух переносов одной версии."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("original"))
     assert created.booking_id is not None
@@ -63,6 +65,7 @@ def test_two_reschedules_of_one_version_have_one_winner() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_reschedule_and_create_for_new_slot_leave_one_valid_occupant() -> None:
+    """Проверить единственного владельца слота при переносе и создании."""
     scenario = create_booking_scenario()
     original = create_booking(scenario.command("original"))
     assert original.booking_id is not None
@@ -71,9 +74,11 @@ def test_reschedule_and_create_for_new_slot_leave_one_valid_occupant() -> None:
     ready = Barrier(2)
 
     def move() -> RescheduleBookingResult:
+        """Запустить конкурентный перенос исходной записи."""
         return _move(scenario, "move", booking_id, timedelta(hours=1), ready)
 
     def create() -> CreateBookingResult:
+        """Запустить конкурентное создание записи в целевом слоте."""
         close_old_connections()
         try:
             ready.wait(timeout=10)
@@ -104,6 +109,7 @@ def test_reschedule_and_create_for_new_slot_leave_one_valid_occupant() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_reschedule_and_cancel_do_not_overwrite_each_other() -> None:
+    """Проверить, что перенос и отмена не перезаписывают результат друг друга."""
     scenario = create_booking_scenario()
     created = create_booking(scenario.command("original"))
     assert created.booking_id is not None
@@ -111,9 +117,11 @@ def test_reschedule_and_cancel_do_not_overwrite_each_other() -> None:
     ready = Barrier(2)
 
     def move() -> RescheduleBookingResult:
+        """Запустить конкурентный перенос исходной записи."""
         return _move(scenario, "move", booking_id, timedelta(hours=1), ready)
 
     def cancel() -> str:
+        """Запустить конкурентную отмену через независимое соединение."""
         close_old_connections()
         try:
             ready.wait(timeout=10)

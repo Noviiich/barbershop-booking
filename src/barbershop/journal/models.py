@@ -39,6 +39,7 @@ class AuditEntry(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть запись, версию и операцию аудита."""
         return f"{self.booking_id}:{self.booking_version}:{self.operation}"
 
 
@@ -70,9 +71,11 @@ class OutboxEvent(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть запись, версию и вид исходящего события."""
         return f"{self.booking_id}:{self.booking_version}:{self.event_kind}"
 
     def clean(self) -> None:
+        """Проверить тип и разрешённые поля полезной нагрузки события."""
         if not isinstance(self.payload, dict):
             raise ValidationError({"payload": "payload must be an object"})
         unknown_keys = set(self.payload) - self.ALLOWED_PAYLOAD_KEYS

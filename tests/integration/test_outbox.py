@@ -14,6 +14,7 @@ from barbershop.journal.models import OutboxEvent
 
 
 def _create_booking() -> Booking:
+    """Создать запись для проверки исходящих событий."""
     business = Business.objects.create(name="Example")
     branch = Branch.objects.create(business=business, name="Main")
     barber = Barber.objects.create(display_name="Alex")
@@ -43,6 +44,7 @@ def _create_booking() -> Booking:
 
 
 def test_payload_rejects_raw_or_contact_fields() -> None:
+    """Проверить запрет произвольных и контактных полей в payload."""
     event = OutboxEvent(payload={"booking_id": "id", "phone": "+79990000000"})
     with pytest.raises(ValidationError, match="unsupported payload key"):
         event.clean()
@@ -50,6 +52,7 @@ def test_payload_rejects_raw_or_contact_fields() -> None:
 
 @pytest.mark.django_db(transaction=True)
 def test_event_is_unique_and_database_rejects_mutation() -> None:
+    """Проверить уникальность события и запрет его изменения в базе."""
     booking = _create_booking()
     event = OutboxEvent.objects.create(
         booking=booking,

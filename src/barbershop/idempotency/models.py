@@ -67,4 +67,5 @@ class CommandReceipt(models.Model):  # type: ignore[misc]
         ]
 
     def __str__(self) -> str:
+        """Вернуть составную идентичность идемпотентной команды."""
         return f"{self.scope_digest}:{self.operation}:{self.idempotency_key}"

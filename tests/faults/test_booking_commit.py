@@ -13,9 +13,11 @@ from tests.support.booking import create_booking_scenario
 def test_failure_after_booking_insert_rolls_back_everything(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Проверить полный откат при сбое после вставки записи."""
     scenario = create_booking_scenario()
 
     def fail_journal(*args: object, **kwargs: object) -> None:
+        """Имитировать отказ при добавлении журнальных записей."""
         raise RuntimeError("failpoint after booking")
 
     monkeypatch.setattr("barbershop.booking.services.append_booking_change", fail_journal)
@@ -30,6 +32,7 @@ def test_failure_after_booking_insert_rolls_back_everything(
 
 @pytest.mark.django_db(transaction=True)
 def test_lost_response_replay_returns_original_booking() -> None:
+    """Проверить возврат исходной записи после потери первого ответа."""
     scenario = create_booking_scenario()
     command = scenario.command("lost-response")
 

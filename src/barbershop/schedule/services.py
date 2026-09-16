@@ -15,11 +15,13 @@ from barbershop.schedule.policy import booking_fits_schedule
 
 class ScheduleConflict(Exception):
     def __init__(self, booking_ids: tuple[UUID, ...]) -> None:
+        """Сохранить идентификаторы записей, конфликтующих с новым расписанием."""
         self.booking_ids = booking_ids
         super().__init__("schedule change conflicts with future bookings")
 
 
 def _database_now() -> datetime:
+    """Получить текущее время непосредственно от базы данных."""
     with connection.cursor() as cursor:
         cursor.execute("SELECT clock_timestamp()")
         value = cursor.fetchone()[0]
@@ -27,6 +29,7 @@ def _database_now() -> datetime:
 
 
 def _ensure_future_bookings_fit(branch_id: UUID, barber_id: UUID) -> None:
+    """Отклонить изменение, если будущие записи перестанут попадать в расписание."""
     bookings = (
         Booking.objects.select_related("branch", "barber")
         .filter(
@@ -52,6 +55,7 @@ def _ensure_future_bookings_fit(branch_id: UUID, barber_id: UUID) -> None:
 
 @transaction.atomic  # type: ignore[untyped-decorator]
 def update_schedule_rule(rule_id: int, changes: Mapping[str, Any]) -> ScheduleRule:
+    """Обновить регулярное правило под требуемыми блокировками каталога."""
     rule = cast(ScheduleRule, ScheduleRule.objects.select_related("branch").get(pk=rule_id))
     lock_branch_and_barbers(rule.branch_id)
     rule = cast(ScheduleRule, ScheduleRule.objects.select_for_update().get(pk=rule_id))
@@ -69,6 +73,7 @@ def update_schedule_rule(rule_id: int, changes: Mapping[str, Any]) -> ScheduleRu
 
 @transaction.atomic  # type: ignore[untyped-decorator]
 def update_schedule_exception(exception_id: UUID, changes: Mapping[str, Any]) -> ScheduleException:
+    """Обновить исключение расписания, не нарушая существующие записи."""
     exception = cast(
         ScheduleException,
         ScheduleException.objects.select_related("branch").get(pk=exception_id),

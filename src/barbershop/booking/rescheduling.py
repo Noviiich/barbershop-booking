@@ -50,6 +50,7 @@ class RescheduleBookingResult:
 
 
 def _validate_command(command: RescheduleBookingCommand) -> None:
+    """Проверить версию и временную метку команды переноса."""
     if command.expected_version < 1:
         raise ReschedulingRuleViolation("expected_version must be positive")
     if command.start_at.tzinfo is None or command.start_at.utcoffset() is None:
@@ -57,6 +58,7 @@ def _validate_command(command: RescheduleBookingCommand) -> None:
 
 
 def _authorize_target(command: RescheduleBookingCommand) -> None:
+    """Убедиться, что переносимая запись принадлежит области команды."""
     if command.scope.target_id != command.booking_id:
         raise ReschedulingRuleViolation("booking is outside command target scope")
     try:
@@ -73,6 +75,7 @@ def _authorize_target(command: RescheduleBookingCommand) -> None:
 
 
 def _set_timeouts(lock_timeout_seconds: float, statement_timeout_seconds: float) -> None:
+    """Установить локальные тайм-ауты блокировки и SQL-запроса."""
     with connection.cursor() as cursor:
         cursor.execute(
             "SELECT set_config('lock_timeout', %s, true)",
@@ -90,6 +93,7 @@ def _reschedule_effect(
     lock_timeout_seconds: float,
     statement_timeout_seconds: float,
 ) -> tuple[str, dict[str, object]]:
+    """Перенести заблокированную запись и атомарно записать журнальные события."""
     _set_timeouts(lock_timeout_seconds, statement_timeout_seconds)
     initial = cast(Booking, Booking.objects.only("barber_id").get(pk=command.booking_id))
     barber = cast(Barber, Barber.objects.select_for_update().get(pk=initial.barber_id))
@@ -183,6 +187,7 @@ def _execute_once(
     lock_timeout_seconds: float,
     statement_timeout_seconds: float,
 ) -> CommandResult:
+    """Однократно выполнить идемпотентную команду переноса записи."""
     payload: dict[str, object] = {
         "booking_id": str(command.booking_id),
         "expected_version": command.expected_version,
@@ -211,7 +216,7 @@ def reschedule_booking(
     lock_timeout_seconds: float = 1.0,
     statement_timeout_seconds: float = 2.0,
 ) -> RescheduleBookingResult:
-    """Move one confirmed booking, retaining its service and catalog snapshots."""
+    """Перенести подтверждённую запись, сохранив снимки услуги и каталога."""
     _validate_command(command)
     _authorize_target(command)
     deadline = time.monotonic() + deadline_seconds

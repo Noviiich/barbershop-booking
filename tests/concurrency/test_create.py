@@ -15,10 +15,12 @@ from tests.support.booking import create_booking_scenario
 
 @pytest.mark.django_db(transaction=True)
 def test_twenty_competing_commands_have_one_success() -> None:
+    """Проверить, что из двадцати конкурирующих команд успешна только одна."""
     scenario = create_booking_scenario()
     ready = Barrier(20)
 
     def run(index: int) -> CreateBookingResult:
+        """Выполнить одну конкурентную команду через независимое соединение."""
         close_old_connections()
         try:
             ready.wait(timeout=10)
