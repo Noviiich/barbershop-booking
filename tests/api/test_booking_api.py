@@ -22,8 +22,12 @@ def test_guest_create_replay_and_management_scope() -> None:
     }
     headers = {"HTTP_IDEMPOTENCY_KEY": "guest-create"}
 
-    created = client.post("/api/v1/bookings/", data=json.dumps(payload), content_type="application/json", **headers)
-    replay = client.post("/api/v1/bookings/", data=json.dumps(payload), content_type="application/json", **headers)
+    created = client.post(
+        "/api/v1/bookings/", data=json.dumps(payload), content_type="application/json", **headers
+    )
+    replay = client.post(
+        "/api/v1/bookings/", data=json.dumps(payload), content_type="application/json", **headers
+    )
 
     assert created.status_code == 201
     assert replay.status_code == 201
@@ -39,9 +43,13 @@ def test_guest_create_replay_and_management_scope() -> None:
 
     booking_id = created.json()["booking_id"]
     token = created.json()["management_token"]
-    accessible = client.get(f"/api/v1/bookings/{booking_id}/", HTTP_AUTHORIZATION=f"Booking {token}")
+    accessible = client.get(
+        f"/api/v1/bookings/{booking_id}/", HTTP_AUTHORIZATION=f"Booking {token}"
+    )
     other_client = Client()
-    denied = other_client.get(f"/api/v1/bookings/{booking_id}/", HTTP_AUTHORIZATION=f"Booking {token}")
+    denied = other_client.get(
+        f"/api/v1/bookings/{booking_id}/", HTTP_AUTHORIZATION=f"Booking {token}"
+    )
 
     assert accessible.status_code == 200
     assert denied.status_code == 404

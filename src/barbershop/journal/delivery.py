@@ -3,6 +3,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import timedelta
+from threading import Event
 from typing import cast
 from uuid import UUID, uuid4
 
@@ -115,3 +116,16 @@ def deliver_one(destination: str, transport: Callable[[OutboxEvent], None]) -> b
     else:
         acknowledge(claim.delivery_id, claim.owner_token)
     return True
+
+
+def run_worker(
+    destination: str,
+    transport: Callable[[OutboxEvent], None],
+    stop: Event,
+    *,
+    poll_interval_seconds: float = 0.25,
+) -> None:
+    """Run a stoppable worker process loop; network I/O remains outside DB transactions."""
+    while not stop.is_set():
+        if not deliver_one(destination, transport):
+            stop.wait(poll_interval_seconds)

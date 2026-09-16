@@ -9,7 +9,13 @@ import pytest
 from django.db import close_old_connections
 from django.utils import timezone
 
-from barbershop.journal.delivery import DeliveryTransportError, acknowledge, claim_next, deliver_one
+from barbershop.journal.delivery import (
+    DeliveryTransportError,
+    acknowledge,
+    claim_next,
+    deliver_one,
+    run_worker,
+)
 from barbershop.journal.models import DeliveryState, OutboxEvent
 from tests.integration.test_outbox import _create_booking
 
@@ -91,3 +97,20 @@ def test_two_workers_claim_distinct_events_with_independent_connections() -> Non
         deliveries = [first_future.result(timeout=20), second_future.result(timeout=20)]
 
     assert len(set(deliveries)) == 2
+
+
+@pytest.mark.django_db(transaction=True)
+def test_worker_loop_stops_after_delivery_when_transport_requests_shutdown() -> None:
+    """Проверить lifecycle: worker прекращает polling по явному stop signal."""
+    event = _event()
+    from threading import Event
+
+    stop = Event()
+    received: list[str] = []
+
+    def transport(item: OutboxEvent) -> None:
+        received.append(str(item.id))
+        stop.set()
+
+    run_worker("TEST", transport, stop, poll_interval_seconds=0)
+    assert received == [str(event.id)]
